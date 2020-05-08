@@ -48,6 +48,8 @@ namespace HDT.Plugins.Advisor
             // Small delay to guarantee all game variables are set correctly by now (especially CoreAPI.Game.IsInMenu)
             await Task.Delay(2000);
 
+            AdvisorSettingsProvider.Apply();
+
             _advisorOverlay = new AdvisorOverlay();
             Core.OverlayCanvas.Children.Add(_advisorOverlay);
             _advisor = new Advisor(_advisorOverlay);
@@ -78,7 +80,7 @@ namespace HDT.Plugins.Advisor
         {
         }
 
-        public Version Version => new Version(1, 0, 13);
+        public Version Version => new Version(1, 0, 14);
 
         public async Task CheckForUpdate()
         {
@@ -87,7 +89,7 @@ namespace HDT.Plugins.Advisor
             {
                 Advisor.Notify("Plugin update available", $"[DOWNLOAD]({latest.HtmlUrl}) Advisor {latest.TagName}", 0,
                     "download", () => Process.Start(latest.HtmlUrl));
-                Log.Info("Update available: " + latest.TagName, "Advisor");
+                Log.Info($"Update available: {latest.TagName}", "Advisor");
             }
         }
     }

@@ -21,23 +21,13 @@ namespace HDT.Plugins.Advisor
 
             var lenA = thisDeck.Cards.Sum(x => x.Count);
             var lenB = cards.Sum(x => x.Count);
-            var lenAnB = 0;
 
             if (lenA == 0 && lenB == 0)
             {
                 return 1;
             }
 
-            foreach (var i in thisDeck.Cards)
-            {
-                foreach (var j in cards)
-                {
-                    if (i.Equals(j))
-                    {
-                        lenAnB += Math.Min(i.Count, j.Count);
-                    }
-                }
-            }
+            var lenAnB = thisDeck.Cards.Sum(i => cards.Where(i.Equals).Sum(j => Math.Min(i.Count, j.Count)));
 
             return (float) Math.Round((float) lenAnB / (lenA + lenB - lenAnB), 4);
         }
@@ -53,20 +43,22 @@ namespace HDT.Plugins.Advisor
                 return 0;
             }
 
-            var count = 0;
+            return thisDeck.Cards.Sum(i => cards.Where(i.Equals).Sum(j => Math.Min(i.Count, j.Count)));
+        }
 
-            foreach (var i in thisDeck.Cards)
+        public static int CountUnion(this Deck thisDeck, IList<Card> cards)
+        {
+            if (cards == null)
             {
-                foreach (var j in cards)
-                {
-                    if (i.Equals(j))
-                    {
-                        count += Math.Min(i.Count, j.Count);
-                    }
-                }
+                return 0;
             }
 
-            return count;
+            var lenA = thisDeck.Cards.Sum(x => x.Count);
+            var lenB = cards.Sum(x => x.Count);
+
+            var count = thisDeck.Cards.Sum(i => cards.Where(i.Equals).Sum(j => Math.Min(i.Count, j.Count)));
+
+            return lenA + lenB - count;
         }
 
         /// <summary>
@@ -76,8 +68,7 @@ namespace HDT.Plugins.Advisor
         /// <returns>Number of played games with the given deck. If no info is found or parse is unsuccessful, return 0.</returns>
         public static int GetPlayedGames(this Deck thisDeck)
         {
-            int result;
-            var success = int.TryParse(Regex.Match(thisDeck.Note, @"Games: ([0-9]+)").Groups[1].Value, out result);
+            var success = int.TryParse(Regex.Match(thisDeck.Note, @"Games: ([0-9]+)").Groups[1].Value, out var result);
             return success ? result : 0;
         }
     }
